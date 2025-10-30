@@ -1,0 +1,24 @@
+{
+  "general": {
+    "checkpointing": {
+      "enabled": true
+    }
+  },
+  "context": {
+    "include": [
+      "GEMINI.md",
+      "docs/author_tutorial.pdf",
+      "docs/EIC_tutorial.pdf",
+      "docs/guesteditor_tutorial.pdf",
+      "docs/HandlingEditor_tutorial.pdf",
+      "docs/Journal_Manager_tutorial.pdf",
+      "docs/Review_tutorial.pdf"
+    ]
+  },
+  "directories": {
+    "backend": "server",
+    "frontend": "client",
+    "docs": "docs",
+    "specs": "specs"
+  }
+}
