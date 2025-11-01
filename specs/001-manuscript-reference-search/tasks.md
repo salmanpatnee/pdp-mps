@@ -94,6 +94,8 @@
 - [ ] T020 Code cleanup and refactoring in `server/app/Http/Controllers/ManuscriptController.php` and `client/src/pages/manuscripts/index.vue`
 - [ ] T021 Performance optimization for search queries in `server/app/Http/Controllers/ManuscriptController.php`
 - [ ] T022 Update documentation (if any specific to search)
+- [ ] T023 [P] Implement performance monitoring for search endpoints in `server/config/logging.php`
+- [ ] T024 [P] Conduct load testing for search functionality and analyze results in `server/tests/Performance/SearchLoadTest.php`
 
 ---
 

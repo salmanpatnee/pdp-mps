@@ -66,3 +66,4 @@ As an authenticated user, I want to continue to be able to search for manuscript
 -   **FR-004**: The search MUST be case-insensitive for both title and reference number.
 -   **FR-005**: If the search term matches the format of a reference number, the system SHOULD prioritize searching by reference number.
 -   **FR-006**: If no manuscripts match the search criteria, the system MUST display a "No results found" message.
+-   **FR-007**: The system MUST recognize reference numbers in the format `PDP-JJJJ-YYYY-NNNN`, where `PDP` is a fixed prefix, `JJJJ` is a journal prefix, `YYYY` is the current year, and `NNNN` is an autoincrementing number (e.g., `PDP-IJAI-2025-0001`).

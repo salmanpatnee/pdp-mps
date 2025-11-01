@@ -1,0 +1,52 @@
+# Node.js
+node_modules/
+dist/
+build/
+*.log
+.env
+.env.local
+.env.*.local
+
+# PHP (Laravel)
+vendor/
+.phpunit.result.cache
+.env
+.env.backup
+.env.dusk.local
+.env.testing
+Homestead.json
+Homestead.yaml
+.vagrant/
+storage/*.key
+/public/hot
+/public/storage
+/bootstrap/cache/*.php
+/app/config/app.php
+/app/config/database.php
+/app/config/services.php
+/app/config/broadcasting.php
+/app/config/cache.php
+/app/config/filesystems.php
+/app/config/logging.php
+/app/config/mail.php
+/app/config/queue.php
+/app/config/session.php
+/app/config/view.php
+/app/config/auth.php
+/app/config/cors.php
+/app/config/sanctum.php
+
+# macOS
+.DS_Store
+
+# VSCode
+.vscode/
+
+# Package Lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Other
+*.tmp
+*.swp
