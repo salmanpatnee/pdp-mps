@@ -6,24 +6,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ManuscriptCoAuthor extends Model
+class CoAuthor extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'manuscript_id',
         'user_id',
         'name',
         'email',
         'affiliation',
         'country',
-        'is_principal',
-        'order',
     ];
 
-    public function manuscript(): BelongsTo
+    public function manuscripts()
     {
-        return $this->belongsTo(Manuscript::class);
+        return $this->belongsToMany(Manuscript::class, 'manuscript_co_author')
+            ->withPivot('is_principal', 'order')
+            ->withTimestamps();
     }
 
     public function user(): BelongsTo

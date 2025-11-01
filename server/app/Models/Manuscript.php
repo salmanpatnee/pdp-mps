@@ -57,7 +57,9 @@ class Manuscript extends Model
 
     public function coAuthors()
     {
-        return $this->hasMany(ManuscriptCoAuthor::class);
+        return $this->belongsToMany(CoAuthor::class, 'manuscript_co_author')
+            ->withPivot('is_principal', 'order')
+            ->withTimestamps();
     }
 
     public function reviewers()

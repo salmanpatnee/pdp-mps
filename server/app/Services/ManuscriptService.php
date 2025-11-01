@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Manuscript;
-use App\Models\ManuscriptCoAuthor;
+use App\Models\CoAuthor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -44,17 +44,25 @@ class ManuscriptService
      */
     protected function syncCoAuthors(Manuscript $manuscript, array $coAuthors): void
     {
+        $coAuthorIds = [];
         foreach ($coAuthors as $coAuthorData) {
-            $manuscript->coAuthors()->create([
-                'user_id' => $coAuthorData['user_id'] ?? null,
-                'name' => $coAuthorData['name'] ?? null,
-                'email' => $coAuthorData['email'] ?? null,
-                'affiliation' => $coAuthorData['affiliation'] ?? null,
-                'country' => $coAuthorData['country'] ?? null,
+            $coAuthor = CoAuthor::firstOrCreate(
+                ['email' => $coAuthorData['email']],
+                [
+                    'user_id' => $coAuthorData['user_id'] ?? null,
+                    'name' => $coAuthorData['name'] ?? null,
+                    'affiliation' => $coAuthorData['affiliation'] ?? null,
+                    'country' => $coAuthorData['country'] ?? null,
+                ]
+            );
+
+            $coAuthorIds[$coAuthor->id] = [
                 'is_principal' => $coAuthorData['is_principal'] ?? false,
                 'order' => $coAuthorData['order'] ?? 1,
-            ]);
+            ];
         }
+
+        $manuscript->coAuthors()->sync($coAuthorIds);
     }
 
     /**

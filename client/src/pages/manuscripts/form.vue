@@ -80,9 +80,9 @@ async function handleAuthorSearch() {
 
   try {
     const coAuthor = await searchAuthors(authorEmail.value)
-    console.log({ user: coAuthor })
+    console.log({ coAuthor })
 
-    if (coAuthor) {
+    if (coAuthor && coAuthor.email) {
       if (coAuthors.value.some((c) => c.user_id === coAuthor.id || c.email === coAuthor.email)) {
         authorAlreadyExists.value = true
       } else {
