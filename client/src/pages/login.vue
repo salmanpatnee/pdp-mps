@@ -13,7 +13,7 @@ const handleSubmit = async (payload: LoginFormPayload, node?: FormKitNode) => {
     const success = await login(payload)
 
     if (success) {
-      router.push('/')
+      router.push('/manuscripts')
     }
   } catch (error) {
     handleInvalidForm(error, node)
