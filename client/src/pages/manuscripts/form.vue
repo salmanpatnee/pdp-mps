@@ -54,7 +54,7 @@ const articleTypeOptions = computed(
 )
 
 const nextTempId = ref(-1)
-const contributors = ref<ManuscriptContributor[]>([])
+const coAuthors = ref<ManuscriptCoAuthor[]>([])
 
 const authorEmail = ref('')
 const isSearchingAuthor = ref(false)
@@ -62,8 +62,7 @@ const authorNotFound = ref(false)
 const authorAlreadyExists = ref(false)
 const showNewAuthorForm = ref(false)
 const newAuthor = ref<Partial<User>>({
-  first_name: '',
-  last_name: '',
+  name: '',
   email: '',
   country: '',
   affiliation: '',
@@ -80,32 +79,29 @@ async function handleAuthorSearch() {
   authorAlreadyExists.value = false
 
   try {
-    const authors = await searchAuthors(authorEmail.value)
-    if (authors.length > 0) {
-      const user = authors[0] // Assuming the first result is the most relevant
+    const coAuthor = await searchAuthors(authorEmail.value)
+    console.log({ user: coAuthor })
 
-      if (contributors.value.some((c) => c.user_id === user.id || c.email === user.email)) {
+    if (coAuthor) {
+      if (coAuthors.value.some((c) => c.user_id === coAuthor.id || c.email === coAuthor.email)) {
         authorAlreadyExists.value = true
       } else {
-        // Add author directly
-        const nameParts = user.name ? user.name.split(' ') : [user.email, '']
-        const firstName = nameParts[0]
-        const lastName = nameParts.slice(1).join(' ')
+        const nameParts = coAuthor.name ? coAuthor.name.split(' ') : [coAuthor.email, '']
+        const fullname = nameParts[0]
 
-        contributors.value.push({
-          id: user.id,
-          user_id: user.id,
-          first_name: firstName,
-          last_name: lastName,
-          email: user.email,
-          affiliation: user.affiliation,
-          country: user.country,
+        coAuthors.value.push({
+          id: coAuthor.id,
+          user_id: coAuthor.id,
+          name: fullname,
+          email: coAuthor.email,
+          affiliation: coAuthor.affiliation,
+          country: coAuthor.country,
           is_principal: false,
-          order: contributors.value.length + 1,
+          order: coAuthors.value.length + 1,
         })
 
-        if (!users.value?.data.some((u) => u.id === user.id)) {
-          users.value?.data.push(user)
+        if (!users.value?.data.some((u) => u.id === coAuthor.id)) {
+          users.value?.data.push(coAuthor)
         }
         showSuccessToast('Author added successfully.')
         authorEmail.value = ''
@@ -115,7 +111,7 @@ async function handleAuthorSearch() {
       newAuthor.value.email = authorEmail.value
     }
   } catch (error) {
-    console.error('Author search failed:', error) // Added for debugging
+    console.error('Author search failed:', error)
     showErrorToast('Failed to search for author.')
   } finally {
     isSearchingAuthor.value = false
@@ -123,10 +119,10 @@ async function handleAuthorSearch() {
 }
 
 async function handleCreateAuthor() {
-  const { email, first_name, last_name, country, affiliation } = newAuthor.value
+  const { email, name, country, affiliation } = newAuthor.value
 
   // Validation for required fields
-  if (!first_name || !last_name || !email || !country || !affiliation) {
+  if (!name || !email || !country || !affiliation) {
     showErrorToast(
       'Please fill all required fields for the new author: First Name, Last Name, Email, Country, and Affiliation.',
     )
@@ -134,47 +130,46 @@ async function handleCreateAuthor() {
   }
 
   // Check for duplicate email
-  if (contributors.value.some((c) => c.email === email)) {
+  if (coAuthors.value.some((c) => c.email === email)) {
     showErrorToast('A contributor with this email already exists in the list.')
     return
   }
 
   // Add the new contributor as a guest
-  contributors.value.push({
+  coAuthors.value.push({
     id: nextTempId.value--, // Assign a temporary negative ID
     user_id: null,
-    first_name,
-    last_name,
+    name,
     email,
     affiliation,
     country,
     is_principal: false,
-    order: contributors.value.length + 1,
+    order: coAuthors.value.length + 1,
   })
 
   // Reset form state
   showNewAuthorForm.value = false
   authorNotFound.value = false
   authorEmail.value = ''
-  newAuthor.value = { first_name: '', last_name: '', email: '', country: '', affiliation: '' }
+  newAuthor.value = { name: '', email: '', country: '', affiliation: '' }
 }
 
-function updateContributorOrder() {
-  contributors.value.forEach((c, index) => {
+function updateCoAuthorOrder() {
+  coAuthors.value.forEach((c, index) => {
     c.order = index + 1
   })
 }
 
-function removeContributor(contributorId: number) {
-  contributors.value = contributors.value.filter((c) => c.id !== contributorId)
+function removeCoAuthor(coAuthorId: number) {
+  coAuthors.value = coAuthors.value.filter((c) => c.id !== coAuthorId)
 }
 
-function togglePrincipalContributor(contributorId: number, value: boolean) {
-  const entry = contributors.value.find((c) => c.id === contributorId)
+function togglePrincipalCoAuthor(coAuthorId: number, value: boolean) {
+  const entry = coAuthors.value.find((c) => c.id === coAuthorId)
   if (!entry) return
   if (value) {
     // Ensure only one principal at a time
-    contributors.value.forEach((c) => (c.is_principal = false))
+    coAuthors.value.forEach((c) => (c.is_principal = false))
     entry.is_principal = true
   } else {
     entry.is_principal = false
@@ -224,39 +219,13 @@ const userById = computed(() => {
   return map
 })
 
-const contributorDetails = computed(() => {
-  const map = new Map<
-    number,
-    { name: string; email: string; affiliation: string; country: string }
-  >()
-  contributors.value.forEach((c) => {
-    if (c.user_id) {
-      const user = userById.value.get(c.user_id)
-      if (user) {
-        map.set(c.id!, {
-          name: user.name,
-          email: user.email,
-          affiliation: user.affiliation || '',
-          country: user.country || '',
-        })
-      }
-    } else {
-      map.set(c.id!, {
-        name: `${c.first_name} ${c.last_name}`,
-        email: c.email || '',
-        affiliation: c.affiliation || '',
-        country: c.country || '',
-      })
-    }
-  })
-  return map
-})
+
 
 const isCoAuthorsStepValid = computed(() => {
-  return contributors.value.length > 0 && contributors.value.some((c) => c.is_principal)
+  return coAuthors.value.length > 0 && coAuthors.value.some((c) => c.is_principal)
 })
 
-const authorCols = ['S.No.', 'First Name', 'Last Name', 'Email', 'Affiliation', 'Principal Author']
+const authorCols = ['S.No.', 'Full Name', 'Email', 'Affiliation', 'Principal Author']
 
 const formData = ref<
   Partial<ManuscriptFormPayload> & {
@@ -278,7 +247,7 @@ const formData = ref<
   keywords: '',
   title: '',
   abstract: '',
-  contributors: [],
+  coAuthors: [],
   copyright: {
     is_corporate_interest: 'No',
     has_human_subjects: 'No',
@@ -292,9 +261,76 @@ const formData = ref<
     used_ai_technology: 'No',
     ai_usage_details: '',
   },
-  is_authorship_confirmed: false,
-  is_information_accurate: false, // Initialize new field
-}) // Populate form data when manuscript is loaded (edit mode)watch(  manuscript,  (manuscriptData) => {    if (manuscriptData && isEditMode.value) {      formData.value = {        journal_id: manuscriptData.journal_id,        article_type_id: manuscriptData.article_type_id,        submission_type: manuscriptData.submission_type,        keywords: manuscriptData.keywords,        title: manuscriptData.title,        abstract: manuscriptData.abstract,        contributors: manuscriptData.contributors.map((c) => ({          id: c.id,          user_id: c.user_id,          first_name: c.first_name,          last_name: c.last_name,          email: c.email,          affiliation: c.affiliation,          country: c.country,          is_principal: c.is_principal,        })),        copyright: {          is_corporate_interest: manuscriptData.copyright?.is_corporate_interest ? 'Yes' : 'No',          has_human_subjects: manuscriptData.copyright?.has_human_subjects ? 'Yes' : 'No',          has_animal_subjects: manuscriptData.copyright?.has_animal_subjects ? 'Yes' : 'No',          is_conflict_interest: manuscriptData.copyright?.is_conflict_interest ? 'Yes' : 'No',          has_us_government_author: manuscriptData.copyright?.has_us_government_author            ? 'Yes'            : 'No',          used_ai_technology: manuscriptData.copyright?.used_ai_technology ? 'Yes' : 'No',        },      }      // Set contributors with principal author information      contributors.value = manuscriptData.contributors.map((c) => ({        id: c.id,        user_id: c.user_id,        first_name: c.first_name,        last_name: c.last_name,        email: c.email,        affiliation: c.affiliation,        country: c.country,        is_principal: c.is_principal,      }))      console.log('Setting contributors:', contributors.value)      // Set existing files for the file uploader      if (manuscriptData.files && manuscriptData.files.length > 0) {        // Populate the file uploader with existing files        nextTick(() => {          const uploaderComponent = fileUploader.value as unknown as {            setExistingFiles?: (files: unknown[]) => void            existingFiles?: unknown[]          }          if (uploaderComponent) {            if (uploaderComponent.setExistingFiles) {              uploaderComponent.setExistingFiles(manuscriptData.files)            } else if (uploaderComponent.existingFiles !== undefined) {              uploaderComponent.existingFiles = manuscriptData.files            }          }        })      }    }  },  { immediate: true },)
+    is_authorship_confirmed: false,
+    is_information_accurate: false, // Initialize new field
+  })
+  
+  // Populate form data when manuscript is loaded (edit mode)
+  watch(
+    manuscript,
+    (manuscriptData) => {
+      if (manuscriptData && isEditMode.value) {
+        formData.value = {
+          journal_id: manuscriptData.journal_id,
+          article_type_id: manuscriptData.article_type_id,
+          submission_type: manuscriptData.submission_type,
+          keywords: manuscriptData.keywords,
+          title: manuscriptData.title,
+          abstract: manuscriptData.abstract,
+          coAuthors: manuscriptData.coAuthors.map((c) => ({
+            id: c.id,
+            user_id: c.user_id,
+            first_name: c.first_name,
+            last_name: c.last_name,
+            email: c.email,
+            affiliation: c.affiliation,
+            country: c.country,
+            is_principal: c.is_principal,
+          })),
+          copyright: {
+            is_corporate_interest: manuscriptData.copyright?.is_corporate_interest ? 'Yes' : 'No',
+            has_human_subjects: manuscriptData.copyright?.has_human_subjects ? 'Yes' : 'No',
+            has_animal_subjects: manuscriptData.copyright?.has_animal_subjects ? 'Yes' : 'No',
+            is_conflict_interest: manuscriptData.copyright?.is_conflict_interest ? 'Yes' : 'No',
+            has_us_government_author: manuscriptData.copyright?.has_us_government_author
+              ? 'Yes'
+              : 'No',
+            used_ai_technology: manuscriptData.copyright?.used_ai_technology ? 'Yes' : 'No',
+          },
+        }
+        // Set coAuthors with principal author information
+        coAuthors.value = manuscriptData.coAuthors.map((c) => ({
+          id: c.id,
+          user_id: c.user_id,
+          first_name: c.first_name,
+          last_name: c.last_name,
+          email: c.email,
+          affiliation: c.affiliation,
+          country: c.country,
+          is_principal: c.is_principal,
+        }))
+        console.log('Setting coAuthors:', coAuthors.value)
+        // Set existing files for the file uploader
+        if (manuscriptData.files && manuscriptData.files.length > 0) {
+          // Populate the file uploader with existing files
+          nextTick(() => {
+            const uploaderComponent = fileUploader.value as unknown as {
+              setExistingFiles?: (files: unknown[]) => void
+              existingFiles?: unknown[]
+            }
+            if (uploaderComponent) {
+              if (uploaderComponent.setExistingFiles) {
+                uploaderComponent.setExistingFiles(manuscriptData.files)
+              } else if (uploaderComponent.existingFiles !== undefined) {
+                uploaderComponent.existingFiles = manuscriptData.files
+              }
+            }
+          })
+        }
+      }
+    },
+    { immediate: true },
+  )
 
 const handleSubmit = async (data: JournalFormPayload, node?: FormKitNode) => {
   const raw_manuscript_files = (fileUploader?.value as unknown as { uploadedFiles?: unknown[] })
@@ -321,10 +357,9 @@ const handleSubmit = async (data: JournalFormPayload, node?: FormKitNode) => {
     keywords: formData.value.keywords!,
     submission_type: formData.value.submission_type!,
     status: formData.value.status || 'Awaiting Editorial Approval',
-    contributors: contributors.value.map((c) => ({
+    coAuthors: coAuthors.value.map((c) => ({
       user_id: c.user_id,
-      first_name: c.first_name,
-      last_name: c.last_name,
+      name: c.name,
       email: c.email,
       affiliation: c.affiliation,
       country: c.country,
@@ -356,6 +391,7 @@ const handleSubmit = async (data: JournalFormPayload, node?: FormKitNode) => {
       )
     } else {
       // Create new manuscript
+      
       await createManuscriptMutation.mutateAsync(finalFormData, {
         // Pass FormData
         onSuccess: () => {
@@ -545,28 +581,20 @@ const handleDownload = async (fileId: number, fileName: string) => {
                             <FormKit
                               type="text"
                               label="First Name"
-                              v-model="newAuthor.first_name"
+                              v-model="newAuthor.name"
                               validation="required"
                             />
                           </div>
                           <div class="col">
-                            <FormKit
-                              type="text"
-                              label="Last Name"
-                              v-model="newAuthor.last_name"
-                              validation="required"
-                            />
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col">
-                            <FormKit
+                           <FormKit
                               type="email"
                               label="Email"
                               v-model="newAuthor.email"
                               validation="required|email"
                             />
                           </div>
+                        </div>
+                        <div class="row">
                           <div class="col">
                             <FormKit
                               type="text"
@@ -575,15 +603,18 @@ const handleDownload = async (fileId: number, fileName: string) => {
                               validation="required"
                             />
                           </div>
-                        </div>
-                        <div class="row">
                           <div class="col">
-                            <FormKit
+                             <FormKit
                               type="text"
                               label="Affiliation"
                               v-model="newAuthor.affiliation"
                               validation="required"
                             />
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                           
                           </div>
                           <div class="col">
                             <button
@@ -612,14 +643,14 @@ const handleDownload = async (fileId: number, fileName: string) => {
                       />
                     </TableHead>
                     <draggable
-                      v-model="contributors"
+                      v-model="coAuthors"
                       tag="tbody"
                       item-key="id"
-                      @end="updateContributorOrder"
+                      @end="updateCoAuthorOrder"
                     >
-                      <template v-if="contributors.length">
+                      <template v-if="coAuthors.length">
                         <tr
-                          v-for="(c, index) in contributors"
+                          v-for="(c, index) in coAuthors"
                           :key="c.id"
                           class="align-middle draggable-item"
                         >
@@ -630,10 +661,7 @@ const handleDownload = async (fileId: number, fileName: string) => {
                             {{ serialNo(c, index) }}
                           </td>
                           <td>
-                            <strong>{{ c.first_name || '—' }}</strong>
-                          </td>
-                          <td>
-                            <strong>{{ c.last_name || '—' }}</strong>
+                            <strong>{{ c.name || '—' }}</strong>
                           </td>
                           <td>{{ c.email || '—' }}</td>
                           <td>{{ c.affiliation || 'N/A' }}</td>
@@ -641,7 +669,7 @@ const handleDownload = async (fileId: number, fileName: string) => {
                             <FormKit
                               type="checkbox"
                               :modelValue="c.is_principal"
-                              @update:modelValue="(val) => togglePrincipalContributor(c.id!, !!val)"
+                              @update:modelValue="(val) => togglePrincipalCoAuthor(c.id!, !!val)"
                               :classes="{
                                 outer: 'mb-0',
                               }"
@@ -649,7 +677,7 @@ const handleDownload = async (fileId: number, fileName: string) => {
                           </td>
                           <td>
                             <button
-                              @click.prevent="removeContributor(c.id!)"
+                              @click.prevent="removeCoAuthor(c.id!)"
                               class="btn btn-sm btn-danger"
                             >
                               Remove
@@ -918,23 +946,23 @@ const handleDownload = async (fileId: number, fileName: string) => {
                           <p class="text-secondary mb-0">{{ formData.keywords || '—' }}</p>
                         </div> -->
 
-                        <!-- Contributors -->
+                        <!-- Co-Authors -->
                         <div class="mb-4">
-                          <h6 class="text-muted mb-1">Contributors</h6>
+                          <h6 class="text-muted mb-1">Co-Authors</h6>
                           <ul class="list-group list-group-flush">
                             <li
-                              v-for="c in contributors"
+                              v-for="c in coAuthors"
                               :key="c.id"
                               class="list-group-item px-0 border-0"
                             >
                               <i class="bi bi-person me-2 text-secondary"></i>
-                              {{ contributorDetails.get(c.id!)?.name || 'Unknown' }}
+                              {{ c.name || 'Unknown' }}
                               <span v-if="c.is_principal" class="badge bg-success ms-2"
                                 >Principal</span
                               >
                             </li>
                             <li
-                              v-if="!contributors || !contributors.length"
+                              v-if="!coAuthors || !coAuthors.length"
                               class="text-muted ps-2"
                             >
                               None

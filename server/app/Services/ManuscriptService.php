@@ -3,8 +3,9 @@
 namespace App\Services;
 
 use App\Models\Manuscript;
-use App\Models\ManuscriptContributor;
+use App\Models\ManuscriptCoAuthor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ManuscriptService
@@ -12,15 +13,19 @@ class ManuscriptService
     /**
      * Create a new manuscript with all related entities
      */
-    public function createManuscript(array $data, Request $request): Manuscript
+    public function createManuscript(array $data, Request $request)
     {
+        // Log the incoming data for debugging
+        Log::info('Manuscript creation data:', $data);
+     
+
         // Step 1: Create manuscript
         $user = $request->user();
         $manuscript = $user->manuscripts()->create($data);
 
-        // Step 2: Sync contributors
-        if (!empty($data['contributors'])) {
-            $this->syncContributors($manuscript, $data['contributors']);
+        // Step 2: Sync co-authors
+        if (!empty($data['coAuthors'])) {
+            $this->syncCoAuthors($manuscript, $data['coAuthors']);
         }
 
         // Step 3: Handle file uploads
@@ -35,20 +40,19 @@ class ManuscriptService
     }
 
     /**
-     * Sync contributors to manuscript
+     * Sync co-authors to manuscript
      */
-    protected function syncContributors(Manuscript $manuscript, array $contributors): void
+    protected function syncCoAuthors(Manuscript $manuscript, array $coAuthors): void
     {
-        foreach ($contributors as $contributorData) {
-            $manuscript->contributors()->create([
-                'user_id' => $contributorData['user_id'] ?? null,
-                'first_name' => $contributorData['first_name'] ?? null,
-                'last_name' => $contributorData['last_name'] ?? null,
-                'email' => $contributorData['email'] ?? null,
-                'affiliation' => $contributorData['affiliation'] ?? null,
-                'country' => $contributorData['country'] ?? null,
-                'is_principal' => $contributorData['is_principal'] ?? false,
-                'order' => $contributorData['order'] ?? 1,
+        foreach ($coAuthors as $coAuthorData) {
+            $manuscript->coAuthors()->create([
+                'user_id' => $coAuthorData['user_id'] ?? null,
+                'name' => $coAuthorData['name'] ?? null,
+                'email' => $coAuthorData['email'] ?? null,
+                'affiliation' => $coAuthorData['affiliation'] ?? null,
+                'country' => $coAuthorData['country'] ?? null,
+                'is_principal' => $coAuthorData['is_principal'] ?? false,
+                'order' => $coAuthorData['order'] ?? 1,
             ]);
         }
     }

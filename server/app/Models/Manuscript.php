@@ -55,9 +55,9 @@ class Manuscript extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function contributors()
+    public function coAuthors()
     {
-        return $this->hasMany(ManuscriptContributor::class);
+        return $this->hasMany(ManuscriptCoAuthor::class);
     }
 
     public function reviewers()

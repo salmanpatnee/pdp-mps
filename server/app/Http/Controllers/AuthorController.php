@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ManuscriptContributor;
+use App\Models\ManuscriptCoAuthor;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -10,49 +10,22 @@ class AuthorController extends Controller
 {
     public function search(Request $request)
     {
-        $query = $request->input("query");
+        $query = $request->input('query');
 
-        $users = User::
-            // where("name", "like", "%{$query}%")
-            // ->orWhere('last_name', 'like', "%{$query}%")
-            where("email", "like", "%{$query}%")
-            ->get();
+        // Search only in manuscript_co_authors table by email
+        $coAuthor = ManuscriptCoAuthor::where('email', 'like', "%{$query}%")->first();
 
-        $contributors = ManuscriptContributor::
-        // where(
-        //     "first_name",
-        //     "like",
-        //     "%{$query}%",
-        // )
-        //     ->orWhere("last_name", "like", "%{$query}%")
-            where("email", "like", "%{$query}%")
-            ->get();
+        if ($coAuthor) {
 
-        $combined = $users->map(function ($user) {
-            return [
-                "id" => $user->id,
-                "name" => $user->name,
-                // "last_name" => $user->last_name,
-                "email" => $user->email,
-                "affiliation" => $user->affiliation,
-                "source" => "user",
-            ];
-        });
-
-        foreach ($contributors as $contributor) {
-            // Avoid adding duplicates if a user with the same email already exists
-            if (!$combined->contains("email", $contributor->email)) {
-                $combined->push([
-                    "id" => $contributor->id,
-                    "first_name" => $contributor->first_name,
-                    "last_name" => $contributor->last_name,
-                    "email" => $contributor->email,
-                    "affiliation" => $contributor->affiliation,
-                    "source" => "contributor",
-                ]);
-            }
+            return response()->json([
+            'id' => $coAuthor->id,
+            'name' => $coAuthor->name,
+            'email' => $coAuthor->email,
+            'affiliation' => $coAuthor->affiliation,
+            'country' => $coAuthor->country,
+            ]);
         }
 
-        return response()->json($combined);
-    }
+        return response()->json(null);
+        }
 }

@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('manuscript_contributors', function (Blueprint $table) {
+        Schema::create('manuscript_co_authors', function (Blueprint $table) {
             $table->id();
             $table->foreignId('manuscript_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('first_name');
-            $table->string('last_name')->nullable();
+            $table->string('name');
             $table->string('email');
             $table->string('affiliation')->nullable();
             $table->string('country')->nullable();
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('manuscript_contributors');
+        Schema::dropIfExists('manuscript_co_authors');
     }
 };

@@ -136,7 +136,7 @@ declare global {
   export type { FormKitNode } from '@formkit/core'
   import('@formkit/core')
   // @ts-ignore
-  export type { Role, User, UserFormPayload, LoginFormPayload, RegisterFormPayload, CustomError, ErrorResponse, Journal, ArticleType, JournalFormPayload, File, ManuscriptContributor, Manuscript, ManuscriptFormPayload, PaginatedResponse, APIResponse, ToastType } from './src/types/index'
+  export type { Role, User, UserFormPayload, LoginFormPayload, RegisterFormPayload, CustomError, ErrorResponse, Journal, ArticleType, JournalFormPayload, File, ManuscriptCoAuthor, Manuscript, ManuscriptFormPayload, PaginatedResponse, APIResponse, ToastType } from './src/types/index'
   import('./src/types/index')
   // @ts-ignore
   export type { ToastPosition, ToastConfig } from './src/utils/index'

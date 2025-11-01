@@ -70,12 +70,11 @@ export type File = {
   updated_at: Date
 }
 
-export interface ManuscriptContributor {
+export interface ManuscriptCoAuthor {
   id?: number; // Optional for new contributors
   manuscript_id?: number; // Optional for new contributors
   user_id?: number | null;
-  first_name?: string;
-  last_name?: string;
+  name?: string;
   email?: string;
   affiliation?: string;
   country?: string;
@@ -91,8 +90,7 @@ export interface Manuscript {
   author_id?: number
   article_type_id?: number
   journal: Journal
-  author: User
-  contributors: ManuscriptContributor[]
+  coAuthors: ManuscriptCoAuthor[]
   article_type: ArticleType
   submission_type: 'manuscript' | 'proposed_abstract' | 'thematic_issue'
   title: string
@@ -128,7 +126,7 @@ export interface ManuscriptFormPayload {
   abstract: string
   keywords: string
   status: 'draft' | 'submitted' | 'under_review' | 'revision' | 'accepted' | 'rejected'
-  contributors: ManuscriptContributor[]
+  coAuthors: ManuscriptCoAuthor[]
   copyright?: Copyright
   is_authorship_confirmed?: boolean
 }
