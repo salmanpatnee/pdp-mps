@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('co_authors', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('name');
             $table->string('email')->unique();
             $table->string('affiliation')->nullable();

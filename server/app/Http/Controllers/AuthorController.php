@@ -15,8 +15,7 @@ class AuthorController extends Controller
 
         if ($coAuthor) {
             return response()->json([
-                'id' => $coAuthor->user_id, // The frontend expects the user_id
-                'user_id' => $coAuthor->user_id,
+                'id' => $coAuthor->id,
                 'name' => $coAuthor->name,
                 'email' => $coAuthor->email,
                 'affiliation' => $coAuthor->affiliation,

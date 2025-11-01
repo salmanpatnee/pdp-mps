@@ -83,7 +83,7 @@ async function handleAuthorSearch() {
     console.log({ coAuthor })
 
     if (coAuthor && coAuthor.email) {
-      if (coAuthors.value.some((c) => c.user_id === coAuthor.id || c.email === coAuthor.email)) {
+      if (coAuthors.value.some((c) => c.email === coAuthor.email)) {
         authorAlreadyExists.value = true
       } else {
         const nameParts = coAuthor.name ? coAuthor.name.split(' ') : [coAuthor.email, '']
@@ -91,7 +91,7 @@ async function handleAuthorSearch() {
 
         coAuthors.value.push({
           id: coAuthor.id,
-          user_id: coAuthor.id,
+          user_id: null, // No longer linking to system users
           name: fullname,
           email: coAuthor.email,
           affiliation: coAuthor.affiliation,
@@ -100,9 +100,6 @@ async function handleAuthorSearch() {
           order: coAuthors.value.length + 1,
         })
 
-        if (!users.value?.data.some((u) => u.id === coAuthor.id)) {
-          users.value?.data.push(coAuthor)
-        }
         showSuccessToast('Author added successfully.')
         authorEmail.value = ''
       }
@@ -277,17 +274,15 @@ const formData = ref<
           keywords: manuscriptData.keywords,
           title: manuscriptData.title,
           abstract: manuscriptData.abstract,
-          coAuthors: manuscriptData.coAuthors.map((c) => ({
-            id: c.id,
-            user_id: c.user_id,
-            first_name: c.first_name,
-            last_name: c.last_name,
-            email: c.email,
-            affiliation: c.affiliation,
-            country: c.country,
-            is_principal: c.is_principal,
-          })),
-          copyright: {
+                  coAuthors: manuscriptData.coAuthors.map((c) => ({
+                    id: c.id,
+                    first_name: c.first_name,
+                    last_name: c.last_name,
+                    email: c.email,
+                    affiliation: c.affiliation,
+                    country: c.country,
+                    is_principal: c.is_principal,
+                  })),          copyright: {
             is_corporate_interest: manuscriptData.copyright?.is_corporate_interest ? 'Yes' : 'No',
             has_human_subjects: manuscriptData.copyright?.has_human_subjects ? 'Yes' : 'No',
             has_animal_subjects: manuscriptData.copyright?.has_animal_subjects ? 'Yes' : 'No',
@@ -301,7 +296,6 @@ const formData = ref<
         // Set coAuthors with principal author information
         coAuthors.value = manuscriptData.coAuthors.map((c) => ({
           id: c.id,
-          user_id: c.user_id,
           first_name: c.first_name,
           last_name: c.last_name,
           email: c.email,
@@ -358,7 +352,6 @@ const handleSubmit = async (data: JournalFormPayload, node?: FormKitNode) => {
     submission_type: formData.value.submission_type!,
     status: formData.value.status || 'Awaiting Editorial Approval',
     coAuthors: coAuthors.value.map((c) => ({
-      user_id: c.user_id,
       name: c.name,
       email: c.email,
       affiliation: c.affiliation,

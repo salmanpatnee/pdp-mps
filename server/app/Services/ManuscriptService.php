@@ -49,7 +49,6 @@ class ManuscriptService
             $coAuthor = CoAuthor::firstOrCreate(
                 ['email' => $coAuthorData['email']],
                 [
-                    'user_id' => $coAuthorData['user_id'] ?? null,
                     'name' => $coAuthorData['name'] ?? null,
                     'affiliation' => $coAuthorData['affiliation'] ?? null,
                     'country' => $coAuthorData['country'] ?? null,

@@ -11,7 +11,6 @@ class CoAuthor extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
         'name',
         'email',
         'affiliation',
@@ -23,10 +22,5 @@ class CoAuthor extends Model
         return $this->belongsToMany(Manuscript::class, 'manuscript_co_author')
             ->withPivot('is_principal', 'order')
             ->withTimestamps();
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
     }
 }
