@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('manuscript_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('first_name');
-            $table->string('last_name');
-            $table->string('email')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('email');
             $table->string('affiliation')->nullable();
             $table->string('country')->nullable();
             $table->boolean('is_principal')->default(false);

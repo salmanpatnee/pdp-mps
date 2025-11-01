@@ -12,18 +12,20 @@ class AuthorController extends Controller
     {
         $query = $request->input("query");
 
-        $users = User::where("name", "like", "%{$query}%")
+        $users = User::
+            // where("name", "like", "%{$query}%")
             // ->orWhere('last_name', 'like', "%{$query}%")
-            ->orWhere("email", "like", "%{$query}%")
+            where("email", "like", "%{$query}%")
             ->get();
 
-        $contributors = ManuscriptContributor::where(
-            "first_name",
-            "like",
-            "%{$query}%",
-        )
-            ->orWhere("last_name", "like", "%{$query}%")
-            ->orWhere("email", "like", "%{$query}%")
+        $contributors = ManuscriptContributor::
+        // where(
+        //     "first_name",
+        //     "like",
+        //     "%{$query}%",
+        // )
+        //     ->orWhere("last_name", "like", "%{$query}%")
+            where("email", "like", "%{$query}%")
             ->get();
 
         $combined = $users->map(function ($user) {
