@@ -45,10 +45,7 @@ This constitution defines standards for architecture, quality, testing, and user
 ---
 
 ## 3. Testing & Validation
-- All backend features must include **Pest tests** covering API endpoints, validation rules, and model relationships.
-- All frontend features must include **Vitest tests** for composables, stores, and components.
-- No feature is considered complete without automated tests confirming critical paths.
-- Prefer test-driven or spec-driven development (start from `/spec` files).
+- No tests will be written for the application, whether it is related to backend or frontend.
 
 ---
 
