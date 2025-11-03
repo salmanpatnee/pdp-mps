@@ -22,8 +22,8 @@ As a co-author, I want to receive an email notification when a manuscript I am l
 
 ### Edge Cases
 
-- What happens if a co-author's email address is invalid or bounces?
-- What happens if the email sending service is down during a submission?
+- If a co-author's email address is invalid or bounces, the system will log the failure and take no further action.
+- If the email sending service is down during a submission, the system will log the failure and queue emails for later retry when the service is available.
 
 ## Requirements *(mandatory)*
 
@@ -34,13 +34,13 @@ As a co-author, I want to receive an email notification when a manuscript I am l
 - **FR-003**: The email notification MUST include the manuscript reference number.
 - **FR-004**: The email notification MUST contain a message informing the recipient that they have been listed as a co-author.
 - **FR-005**: The email template will be fixed and defined in the code.
-- **FR-006**: The system MUST log email sending failures for an administrator to review.
+- **FR-006**: The system MUST log email sending failures for an administrator to review, including timestamp, recipient email, manuscript ID, and error message.
 
 ### Key Entities
 
 - **Manuscript**: Represents the submitted work. Key attributes: title, reference number, authors.
 - **Co-author**: Represents a contributor to the manuscript who is not the primary submitting author. Key attributes: name, email.
-- **Notification**: Represents the communication sent to a co-author. Key attributes: recipient, subject, body, status (e.g., sent, failed).
+- **Notification**: Represents the communication sent to a co-author. Key attributes: recipient, subject, body, status (`pending`, `sent`, or `failed`). Status transitions: `pending` -> `sent` or `pending` -> `failed`.
 
 ## Success Criteria *(mandatory)*
 
@@ -57,3 +57,14 @@ As a co-author, I want to receive an email notification when a manuscript I am l
 - The email content will be a fixed template defined in the code.
 - Email sending failures will be logged for administrator review, without automatic retries.
 - Email open rates will not be tracked.
+
+---
+
+## Clarifications
+
+### Session 2025-11-03
+
+- Q: How should the system handle invalid or bounced email addresses for co-authors? → A: Log the failure and take no further action.
+- Q: What specific information should be included in the log for a failed email notification? → A: Timestamp, recipient email, manuscript ID, error message.
+- Q: What are the possible statuses for a `Notification`, and what are the transitions between them? → A: `pending` -> `sent` or `failed`
+- Q: What is the expected behavior if the external email sending service is unavailable for an extended period? → A: Log the failure and queue emails for later retry when the service is available.
