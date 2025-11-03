@@ -11,31 +11,31 @@ export function useManuscripts() {
   const fetchManuscripts = () => {
     const queries = ref({
       page: 1,
-      'filter[title]': '',
+      'filter[search]': '',
     })
-    const debouncedName = ref('')
-    const updateDebouncedName = debounce((title: string) => {
-      debouncedName.value = title
+    const debouncedSearchTerm = ref('')
+    const updateDebouncedSearchTerm = debounce((searchTerm: string) => {
+      debouncedSearchTerm.value = searchTerm
     }, 500)
 
     watch(
-      () => queries.value['filter[title]'],
+      () => queries.value['filter[search]'],
       (val) => {
         queries.value.page = 1
-        updateDebouncedName(val)
+        updateDebouncedSearchTerm(val)
       },
     )
 
     const getManuscript = async (): Promise<PaginatedResponse<Manuscript>> => {
       const params = new URLSearchParams()
       params.set('page', String(queries.value.page))
-      if (debouncedName.value) params.set('filter[title]', debouncedName.value)
+      if (debouncedSearchTerm.value) params.set('filter[search]', debouncedSearchTerm.value)
       const { data } = await http.get<PaginatedResponse<Manuscript>>(`${endpoint}?${params}`)
       return data
     }
 
     const query = useQuery({
-      queryKey: ['manuscripts', queries, debouncedName],
+      queryKey: ['manuscripts', queries, debouncedSearchTerm],
       queryFn: getManuscript,
       refetchOnWindowFocus: false,
     })

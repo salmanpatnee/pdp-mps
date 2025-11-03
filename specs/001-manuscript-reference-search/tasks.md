@@ -55,15 +55,15 @@
 
 **Backend (Laravel)**
 
-- [ ] T008 [US1] Modify `ManuscriptController@index` to include search by `reference_no` in `server/app/Http/Controllers/ManuscriptController.php`
-- [ ] T009 [US1] Ensure search is case-insensitive for `reference_no` in `server/app/Http/Controllers/ManuscriptController.php`
-- [ ] T010 [US1] Implement logic to prioritize `reference_no` search if the term matches a reference number format in `server/app/Http/Controllers/ManuscriptController.php`
+- [X] T008 [US1] Modify `ManuscriptController@index` to include search by `reference_no` in `server/app/Http/Controllers/ManuscriptController.php`
+- [X] T009 [US1] Ensure search is case-insensitive for `reference_no` in `server/app/Http/Controllers/ManuscriptController.php`
+- [X] T010 [US1] Implement logic to prioritize `reference_no` search if the term matches a reference number format in `server/app/Http/Controllers/ManuscriptController.php`
 
 **Frontend (Vue 3)**
 
-- [ ] T011 [US1] Update search input field to handle both title and reference number search in `client/src/pages/manuscripts/index.vue`
-- [ ] T012 [US1] Modify `useManuscripts` composable to pass search term to backend for both title and reference number in `client/src/composables/useManuscripts.ts`
-- [ ] T013 [US1] Display "No results found" message when no manuscripts match the search criteria in `client/src/pages/manuscripts/index.vue`
+- [X] T011 [US1] Update search input field to handle both title and reference number search in `client/src/pages/manuscripts/index.vue`
+- [X] T012 [US1] Modify `useManuscripts` composable to pass search term to backend for both title and reference number in `client/src/composables/useManuscripts.ts`
+- [X] T013 [US1] Display "No results found" message when no manuscripts match the search criteria in `client/src/pages/manuscripts/index.vue`
 
 ---
 
@@ -77,25 +77,25 @@
 
 **Backend (Laravel)**
 
-- [ ] T014 [US2] Verify `ManuscriptController@index` still supports search by title in `server/app/Http/Controllers/ManuscriptController.php`
-- [ ] T015 [US2] Ensure search is case-insensitive for title in `server/app/Http/Controllers/ManuscriptController.php`
+- [X] T014 [US2] Verify `ManuscriptController@index` still supports search by title in `server/app/Http/Controllers/ManuscriptController.php`
+- [X] T015 [US2] Ensure search is case-insensitive for title in `server/app/Http/Controllers/ManuscriptController.php`
 
 **Frontend (Vue 3)**
 
-- [ ] T016 [US2] Verify search input field still functions correctly for title search in `client/src/pages/manuscripts/index.vue`
-- [ ] T017 [US2] Verify `useManuscripts` composable still passes title search term to backend in `client/src/composables/useManuscripts.ts`
+- [X] T016 [US2] Verify search input field still functions correctly for title search in `client/src/pages/manuscripts/index.vue`
+- [X] T017 [US2] Verify `useManuscripts` composable still passes title search term to backend in `client/src/composables/useManuscripts.ts`
 
 ---
 
 ## Phase N: Polish & Cross-Cutting Concerns
 
-- [ ] T018 [P] Add Pest tests for `ManuscriptController@index` covering search by reference number and title in `server/tests/Feature/ManuscriptSearchTest.php`
-- [ ] T019 [P] Add Vitest tests for search input and `useManuscripts` composable in `client/tests/unit/`
-- [ ] T020 Code cleanup and refactoring in `server/app/Http/Controllers/ManuscriptController.php` and `client/src/pages/manuscripts/index.vue`
-- [ ] T021 Performance optimization for search queries in `server/app/Http/Controllers/ManuscriptController.php`
-- [ ] T022 Update documentation (if any specific to search)
-- [ ] T023 [P] Implement performance monitoring for search endpoints in `server/config/logging.php`
-- [ ] T024 [P] Conduct load testing for search functionality and analyze results in `server/tests/Performance/SearchLoadTest.php`
+- [X] T018 [P] Add Pest tests for `ManuscriptController@index` covering search by reference number and title in `server/tests/Feature/ManuscriptSearchTest.php`
+- [X] T019 [P] Add Vitest tests for search input and `useManuscripts` composable in `client/tests/unit/`
+- [X] T020 Code cleanup and refactoring in `server/app/Http/Controllers/ManuscriptController.php` and `client/src/pages/manuscripts/index.vue`
+- [X] T021 Performance optimization for search queries in `server/app/Http/Controllers/ManuscriptController.php`
+- [X] T022 Update documentation (if any specific to search)
+- [X] T023 [P] Implement performance monitoring for search endpoints in `server/config/logging.php`
+- [X] T024 [P] Conduct load testing for search functionality and analyze results in `server/tests/Performance/SearchLoadTest.php`
 
 ---
 

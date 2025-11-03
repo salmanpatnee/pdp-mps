@@ -10,21 +10,40 @@ use App\Services\ManuscriptService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter; // Added
+use Illuminate\Database\Eloquent\Builder; // Added
 
 class ManuscriptController extends ApiController
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        // Reference number format: PDP-JJJJ-YYYY-NNNN
+        $referenceNoPattern = '/^PDP-[A-Z]{4}-\d{4}-\d{4}$/i';
+
         return ManuscriptResource::collection(QueryBuilder::for(Manuscript::class)->with('journal')
-            ->allowedFilters(['title'])
+            ->allowedFilters([
+                'title',
+                'reference_no',
+                AllowedFilter::callback('search', function (Builder $query, $value) use ($referenceNoPattern) {
+                    if (preg_match($referenceNoPattern, $value)) {
+                        // Prioritize search by reference_no if it matches the pattern
+                        $query->where('reference_no', 'LIKE', '%' . $value . '%');
+                    } else {
+                        // Search by both title and reference_no
+                        $query->where(function ($q) use ($value) {
+                            $q->where('title', 'LIKE', '%' . $value . '%')
+                              ->orWhere('reference_no', 'LIKE', '%' . $value . '%');
+                        });
+                    }
+                }),
+            ])
             ->allowedSorts('title')
             ->paginate()
             ->appends(request()->query()));
     }
-
     /**
      * Store a newly created resource in storage.
      */

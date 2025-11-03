@@ -53,7 +53,7 @@ const handleDelete = async (manuscript: Manuscript) => {
           <!-- Search/Filter Section -->
           <div class="d-flex justify-content-end mb-3 row">
             <div class="col-md-6">
-              <SearchInput v-model="queries['filter[title]']" placeholder="Search manuscripts..." />
+              <SearchInput v-model="queries['filter[search]']" placeholder="Search by title or reference number..." />
             </div>
           </div>
 
