@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter; // Added
 use Illuminate\Database\Eloquent\Builder; // Added
+use App\Events\ManuscriptSubmitted; // Added
 
 class ManuscriptController extends ApiController
 {
@@ -35,7 +36,7 @@ class ManuscriptController extends ApiController
                         // Search by both title and reference_no
                         $query->where(function ($q) use ($value) {
                             $q->where('title', 'LIKE', '%' . $value . '%')
-                              ->orWhere('reference_no', 'LIKE', '%' . $value . '%');
+                                ->orWhere('reference_no', 'LIKE', '%' . $value . '%');
                         });
                     }
                 }),
@@ -50,6 +51,10 @@ class ManuscriptController extends ApiController
     public function store(StoreManuscriptRequest $request, ManuscriptService $service)
     {
         $manuscript = $service->createManuscript($request->validated(), $request);
+
+        // event(new ManuscriptSubmitted($manuscript));
+        
+        ManuscriptSubmitted::dispatch($manuscript);
 
         return $this->ok('Manuscript added successfully.', new ManuscriptResource($manuscript));
     }

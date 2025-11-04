@@ -7,7 +7,7 @@
 
 ## Summary
 
-This feature will automatically send a notification email to all co-authors when a manuscript is submitted. It will use Laravel’s Mailable class with markdown templates, the queue system for asynchronous processing, and Brevo for delivery. A `notification_logs` table will track email delivery activity.
+This feature will automatically send a notification email to all co-authors when a manuscript is submitted. It will use Laravel’s Mailable class with markdown templates, the queue system for asynchronous processing, and Mailtrap for delivery. A `notification_logs` table will track email delivery activity.
 
 ## Technical Context
 
