@@ -333,8 +333,8 @@ const handleSubmit = async (data: JournalFormPayload, node?: FormKitNode) => {
   // Transform manuscript_files into the format expected by the backend
   const manuscript_files_for_backend =
     raw_manuscript_files?.map((fileItem: any) => ({
-      file_name: fileItem.name,
-      file_path: fileItem.file?.path || '', // Assuming file.path exists for temp files
+      file_name: fileItem.file_name,
+      file_path: fileItem.file_path || '',
     })) || []
 
   const payload = {
@@ -695,6 +695,10 @@ const handleDownload = async (fileId: number, fileName: string) => {
                     name="is_authorship_confirmed"
                     v-model="formData.is_authorship_confirmed"
                     validation="required|accepted"
+                    :validation-messages="{
+                      required: 'Please confirm author details before proceeding.',
+                      accepted: 'Please confirm author details before proceeding.'
+                    }"
                     :classes="{
                       outer: 'my-4',
                       label: 'form-check-label fw-semibold',
@@ -886,7 +890,7 @@ const handleDownload = async (fileId: number, fileName: string) => {
                 <FormKit type="step" name="previewAndSubmit">
                   <div class="container my-4">
                     <div class="card border-0 shadow-sm">
-                      <div class="card-header bg-light">
+                      <div class="bg-primary bg-primary-subtle card-header">
                         <h4 class="mb-0 fw-semibold">
                           <i class="bi bi-eye me-2"></i> Preview Manuscript Submission
                         </h4>
@@ -952,25 +956,56 @@ const handleDownload = async (fileId: number, fileName: string) => {
                         <!-- Co-Authors -->
                         <div class="mb-4">
                           <h6 class="text-muted mb-1">Co-Authors</h6>
-                          <ul class="list-group list-group-flush">
-                            <li
-                              v-for="c in coAuthors"
-                              :key="c.id"
-                              class="list-group-item px-0 border-0"
-                            >
-                              <i class="bi bi-person me-2 text-secondary"></i>
-                              {{ c.name || 'Unknown' }}
-                              <span v-if="c.is_principal" class="badge bg-success ms-2"
-                                >Principal</span
-                              >
-                            </li>
-                            <li
-                              v-if="!coAuthors || !coAuthors.length"
-                              class="text-muted ps-2"
-                            >
-                              None
-                            </li>
-                          </ul>
+                          <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                              <thead>
+                                <tr>
+                                  <th class="bg-primary text-white">Full Name</th>
+                                  <th class="bg-primary text-white">Email</th>
+                                  <th class="bg-primary text-white">Affiliation</th>
+                                  <th class="bg-primary text-white">Principal</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr v-for="c in coAuthors" :key="c.id">
+                                  <td>{{ c.name || 'Unknown' }}</td>
+                                  <td>{{ c.email }}</td>
+                                  <td>{{ c.affiliation }}</td>
+                                  <td>
+                                    <span v-if="c.is_principal" class="badge bg-success">Yes</span>
+                                    <span v-else class="badge bg-secondary">No</span>
+                                  </td>
+                                </tr>
+                                <tr v-if="!coAuthors || !coAuthors.length">
+                                  <td colspan="4" class="text-center text-muted">No co-authors added.</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+
+                        <!-- Uploaded Files -->
+                        <div class="mb-4">
+                          <h6 class="text-muted mb-1">Uploaded Files</h6>
+                          <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                              <thead>
+                                <tr>
+                                  <th class="bg-primary text-white">File Name</th>
+                                  <th class="bg-primary text-white">File Extension</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr v-for="f in (fileUploader?.uploadedFiles || [])" :key="f.file_name">
+                                  <td>{{ f.file_name }}</td>
+                                  <td>{{ f.file_name.split('.').pop() }}</td>
+                                </tr>
+                                <tr v-if="!(fileUploader?.uploadedFiles && fileUploader.uploadedFiles.length)">
+                                  <td colspan="2" class="text-center text-muted">No files uploaded.</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
 
                         <!-- Copyright & Declarations -->
