@@ -76,7 +76,7 @@ const handleDelete = async (manuscript: Manuscript) => {
                     {{ serialNo(data, index) }}
                   </td>
                   <td>
-                    {{ manuscript.journal.name }}
+                    {{ manuscript.journal.abbreviation }}
                   </td>
                   <td>{{ manuscript.reference_no }}</td>
                   <td><AppDate :timestamp="manuscript.created_at" /></td>

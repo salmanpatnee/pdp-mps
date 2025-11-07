@@ -436,6 +436,9 @@ const handleDownload = async (fileId: number, fileName: string) => {
           <div v-else class="row">
             <FormKit type="form" :actions="false" @submit="handleSubmit">
               <FormKit type="multi-step" tab-style="progress" :allow-incomplete="false">
+
+                
+
                 <FormKit type="step" name="submissionDetails">
                   <div class="row">
                     <div class="col">
@@ -516,6 +519,7 @@ const handleDownload = async (fileId: number, fileName: string) => {
                     </div>
                   </div>
                 </FormKit>
+                
                 <FormKit type="step" name="coAuthors">
                   <div class="row">
                     <div class="col-md-6">
@@ -687,13 +691,13 @@ const handleDownload = async (fileId: number, fileName: string) => {
                   </table>
                   <FormKit
                     type="checkbox"
-                    label="Once authorship is submitted, no further changes will be allowed."
+                    label="Please ensure that all corresponding and co-author names, affiliations, and authorship details are complete and accurate, as no changes or additions will be allowed after submission. Also confirm that the author information matches the manuscript."
                     name="is_authorship_confirmed"
                     v-model="formData.is_authorship_confirmed"
                     validation="required|accepted"
                     :classes="{
                       outer: 'my-4',
-                      label: 'form-check-label',
+                      label: 'form-check-label fw-semibold',
                       input: 'form-check-input',
                     }"
                   />
@@ -712,8 +716,13 @@ const handleDownload = async (fileId: number, fileName: string) => {
                     You must add at least one author and select one as Principal Author.
                   </p>
                 </FormKit>
+
                 <FormKit type="step" name="fileUploading">
-                  <Uploader ref="fileUploader" />
+                  <Uploader
+                    ref="fileUploader"
+                    accepted-files=".doc,.docx,.pdf,.txt"
+                    help="Only .doc, .docx, .pdf, and .txt files are accepted."
+                  />
 
                   <!-- Display existing files in edit mode -->
                   <div v-if="isEditMode && manuscript?.files?.length" class="mt-4">
@@ -747,6 +756,7 @@ const handleDownload = async (fileId: number, fileName: string) => {
                     </div>
                   </div>
                 </FormKit>
+                
                 <FormKit type="step" name="copyright">
                   <FormKit
                     label="Is the Work likely to be of particular interest to pharmaceutical or biotechnology companies or any other corporate entities?"

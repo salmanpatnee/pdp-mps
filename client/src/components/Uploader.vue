@@ -1,22 +1,26 @@
 <template>
   <div class="mb-2">
     <label class="font-bold mb-2">Upload Files</label>
-
     <div
       id="manuscript-dropzone"
       class="dropzone border-dashed border-2 p-6 text-center rounded-lg"
     >
-      <p class="text-gray-500">Drag & drop your manuscript files here, or click to browse</p>
+      <p v-if="help" class="text-gray-500">{{ help }}</p>
+      <p v-else class="text-gray-500">
+        Drag & drop your manuscript files here, or click to browse
+        <br />
+        Drop files here to upload
+      </p>
     </div>
 
-    <ul v-if="uploadedFiles.length" class="mt-4 text-sm text-gray-700 space-y-1">
+    <!-- <ul v-if="uploadedFiles.length" class="mt-4 text-sm text-gray-700 space-y-1">
       <li v-for="file in uploadedFiles" :key="file.file_name">📄 {{ file.file_name }}</li>
-    </ul>
+    </ul> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, defineProps } from 'vue'
 import Dropzone from 'dropzone'
 
 Dropzone.autoDiscover = false // Prevent auto init
@@ -25,6 +29,17 @@ interface UploadedFile {
   file_name: string
   [key: string]: unknown
 }
+
+const props = defineProps({
+  acceptedFiles: {
+    type: String,
+    default: '.pdf,.doc,.docx,.zip,.jpg,.png',
+  },
+  help: {
+    type: String,
+    default: '',
+  },
+})
 
 const uploadedFiles = ref<UploadedFile[]>([])
 let dz: Dropzone | null = null
@@ -37,7 +52,7 @@ onMounted(() => {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
     },
-    acceptedFiles: '.pdf,.doc,.docx,.zip,.jpg,.png',
+    acceptedFiles: props.acceptedFiles,
     maxFilesize: 50,
     parallelUploads: 5,
     addRemoveLinks: true,
